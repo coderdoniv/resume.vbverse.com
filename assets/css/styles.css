@@ -1,0 +1,248 @@
+/* resume.vbverse.com
+   Minimal, clean, printable resume site.
+   - Dark mode by default, with a light toggle.
+   - Print styles for PDF export.
+*/
+
+:root{
+  --bg: #0b0f14;
+  --panel: rgba(255,255,255,0.04);
+  --border: rgba(255,255,255,0.08);
+  --text: rgba(255,255,255,0.92);
+  --muted: rgba(255,255,255,0.62);
+  --link: rgba(130,190,255,0.95);
+  --chip: rgba(255,255,255,0.06);
+  --shadow: 0 8px 28px rgba(0,0,0,0.35);
+  --radius: 14px;
+  --max: 1080px;
+  --font-main: 'Quicksand', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --font-light: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+[data-theme="light"]{
+  --bg: #ffffff;
+  --panel: rgba(12,18,28,0.04);
+  --border: rgba(12,18,28,0.10);
+  --text: rgba(12,18,28,0.92);
+  --muted: rgba(12,18,28,0.62);
+  --link: rgba(0,102,204,0.95);
+  --chip: rgba(12,18,28,0.06);
+  --shadow: 0 10px 30px rgba(0,0,0,0.10);
+  --font-main: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  font-family: var(--font-main);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.55;
+}
+
+a{ color: var(--link); text-decoration: none; }
+a:hover{ text-decoration: underline; }
+
+.container{ max-width: var(--max); margin: 0 auto; padding: 0 20px; }
+.sep{ margin: 0 8px; color: var(--muted); }
+
+.skip{
+  position:absolute; left:-999px; top:auto; width:1px; height:1px; overflow:hidden;
+}
+.skip:focus{
+  left:16px; top:16px; width:auto; height:auto; padding:10px 12px;
+  background: var(--panel); border:1px solid var(--border); border-radius: 10px;
+  z-index: 1000;
+}
+
+.topbar{
+  position: sticky; top:0;
+  background: rgba(11,15,20,0.72);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  z-index: 50;
+}
+[data-theme="light"] .topbar{ background: rgba(255,255,255,0.82); }
+
+.topbar__inner{
+  display:flex; align-items:center; justify-content:space-between;
+  gap: 14px;
+  padding: 12px 0;
+}
+
+.brand{ display:flex; align-items:center; gap:10px; white-space:nowrap; }
+.brand__dot{
+  width:10px; height:10px; border-radius:999px; background: #60a5fa;
+  box-shadow: 0 0 0 6px rgba(96,165,250,0.18);
+}
+.brand__text{ font-weight: 600; color: var(--muted); font-size: 0.95rem; }
+
+.nav{
+  display:flex; gap: 14px; flex-wrap: wrap;
+}
+.nav a{
+  color: var(--muted);
+  font-size: 0.92rem;
+  padding: 6px 8px;
+  border-radius: 10px;
+}
+.nav a:hover{
+  color: var(--text);
+  background: var(--panel);
+  text-decoration: none;
+}
+
+.actions{ display:flex; gap: 10px; align-items:center; }
+.btn{
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+.btn:hover{ background: rgba(255,255,255,0.12); }
+.btn--ghost{ background: transparent; }
+
+.hero{ padding: 42px 0 18px; }
+.hero__grid{
+  display:grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 22px;
+  align-items:start;
+}
+
+.h1{ font-size: clamp(2rem, 3.2vw, 2.6rem); margin: 0 0 6px; letter-spacing: -0.02em; }
+.subtitle{ margin:0 0 14px; color: var(--muted); font-weight: 600; }
+.lead{ margin: 0 0 16px; color: var(--text); }
+
+.meta{
+  display:grid;
+  gap: 6px;
+  margin: 16px 0;
+  padding: 14px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+.meta__row{
+  display:grid;
+  grid-template-columns: 110px 1fr;
+  gap: 10px;
+}
+.meta__k{ color: var(--muted); font-weight: 600; font-size: 0.9rem; }
+.meta__v{ color: var(--text); font-size: 0.95rem; }
+
+.chips{ display:flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.chip{
+  background: var(--chip);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+}
+
+.section{ padding: 18px 0; }
+.section--compact{ padding: 12px 0 22px; }
+
+.card{
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 16px 16px;
+  box-shadow: var(--shadow);
+}
+
+.h2{ font-size: 1.35rem; margin: 0 0 12px; }
+.h3{ font-size: 1.05rem; margin: 0 0 2px; }
+
+.muted{ color: var(--muted); }
+.small{ font-size: 0.92rem; }
+
+.bullets{
+  margin: 10px 0 0;
+  padding-left: 1.1rem;
+}
+.bullets li{ margin: 6px 0; }
+
+.cta{ display:flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+
+.grid2{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.cols{
+  margin: 0;
+  padding-left: 1.1rem;
+  columns: 2;
+  column-gap: 20px;
+}
+.cols li{ break-inside: avoid; margin: 6px 0; }
+
+.timeline{ display:grid; gap: 14px; }
+
+.titem{
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 16px 16px;
+}
+.titem__head{
+  display:flex;
+  justify-content:space-between;
+  gap: 12px;
+  align-items:flex-start;
+}
+.titem__meta{
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+.tags{ display:flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.tag{
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.06);
+  color: var(--muted);
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+}
+
+.note{ margin-top: 10px; }
+
+.footer{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap: 10px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+/* Responsive */
+@media (max-width: 920px){
+  .hero__grid{ grid-template-columns: 1fr; }
+  .topbar__inner{ flex-wrap: wrap; }
+}
+@media (max-width: 560px){
+  .meta__row{ grid-template-columns: 1fr; }
+  .cols{ columns: 1; }
+}
+
+/* Print */
+@media print{
+  .topbar, .actions, .nav{ display:none !important; }
+  body{ background: #fff !important; color:#111 !important; }
+  a{ color:#111 !important; text-decoration: none !important; }
+  .card, .titem, .meta{ box-shadow:none !important; background: transparent !important; }
+  .container{ max-width: 900px; }
+  .section{ padding: 10px 0; }
+}
