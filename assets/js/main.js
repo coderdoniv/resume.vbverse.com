@@ -1,22 +1,32 @@
 (() => {
+  const STORAGE_KEY = "vbverse-theme"; // "dark" | "light"
   const root = document.documentElement;
-  const btnPrint = document.getElementById("btnPrint");
-  const btnTheme = document.getElementById("btnTheme");
 
-  // Theme: default dark, persist choice
-  const saved = localStorage.getItem("vbverse_resume_theme");
-  if (saved === "light") root.setAttribute("data-theme", "light");
-
-  btnTheme?.addEventListener("click", () => {
-    const isLight = root.getAttribute("data-theme") === "light";
-    if (isLight) {
-      root.removeAttribute("data-theme");
-      localStorage.setItem("vbverse_resume_theme", "dark");
-    } else {
+  function applyTheme(theme) {
+    if (theme === "light") {
       root.setAttribute("data-theme", "light");
-      localStorage.setItem("vbverse_resume_theme", "light");
+    } else {
+      root.removeAttribute("data-theme"); // dark is default
     }
-  });
+  }
 
-  btnPrint?.addEventListener("click", () => window.print());
+  function getSavedTheme() {
+    const t = localStorage.getItem(STORAGE_KEY);
+    return (t === "light" || t === "dark") ? t : "dark";
+  }
+
+  // Apply on every page load (index + timeline)
+  applyTheme(getSavedTheme());
+
+  // Wire up toggle if the button exists on this page
+  const btn = document.getElementById("btnTheme");
+  if (btn) {
+    btn.addEventListener("click", () => {
+      const current = root.getAttribute("data-theme") === "light" ? "light" : "dark";
+      const next = current === "light" ? "dark" : "light";
+      applyTheme(next);
+      localStorage.setItem(STORAGE_KEY, next);
+    });
+  }
 })();
+
