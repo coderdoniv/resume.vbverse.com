@@ -743,10 +743,36 @@ button.btn {
 .year-track {
   margin-top: 8px;
   position: relative;
-  padding: 10px 8px 18px;
+
+  /* was: 10px 8px 18px */
+  padding: 10px 8px 28px;
+  /* give labels more room */
+
   border: 1px solid var(--border);
   border-radius: 16px;
   background: var(--panel);
+
+  overflow: hidden;
+  /* keeps labels inside rounded corners */
+}
+
+
+@media (max-width: 600px) {
+  .year-track {
+    padding-bottom: 24px;
+  }
+}
+
+[data-theme="light"] .year-track {
+  padding-bottom: 30px;
+}
+
+.year-ticks {
+  overflow: hidden;
+}
+
+.year-ticks .tick--label {
+  flex: 0 0 auto;
 }
 
 .year-slider {
