@@ -5,7 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Vinod Balanarayanan — Career Timeline</title>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700|Inter:400,500,600,700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="./assets/css/styles.css" />
 </head>
 
@@ -22,6 +25,7 @@
                     <span class="theme-icon" aria-hidden="true"></span>
                 </button>
                 <a class="btn btn--ghost" href="./index.html">Resume</a>
+                <a class="btn btn--ghost" href="./techmap.html">Tech map</a>
                 <button class="btn" id="btnPrint" type="button">Print / Save PDF</button>
             </div>
         </div>
@@ -336,11 +340,22 @@
     <footer class="container page-footer">
         <small>© <span id="y"></span> Vinod Balanarayanan</small>
     </footer>
+    <script id="tech-usage-data" type="application/json">
+        {
+        "years": [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024],
+        "tech": [
+            { "name": "Delphi", "series": { "2017": 90, "2018": 90, "2019": 85, "2020": 80, "2021": 80, "2022": 75, "2023": 70, "2024": 70 } },
+            { "name": "Firebird", "series": { "2017": 85, "2018": 85, "2019": 80, "2020": 80, "2021": 75, "2022": 70, "2023": 65, "2024": 65 } },
+            { "name": "ASP.NET", "series": { "2019": 30, "2020": 45, "2021": 60, "2022": 65, "2023": 70, "2024": 75 } }
+        ]
+        }
+    </script>
 
     <script>
         document.getElementById("y").textContent = new Date().getFullYear();
     </script>
     <script src="./assets/js/main.js"></script>
+    <script src="./assets/js/techmap.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Tech Data Editor • resume.vbverse.com</title>
+    <link rel="stylesheet" href="./assets/css/styles.css" />
+    <style>
+        .editor {
+            display: grid;
+            gap: 14px;
+        }
+
+        .editor__row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .editor input[type="text"],
+        .editor input[type="number"] {
+            border: 1px solid var(--border);
+            background: var(--panel);
+            color: var(--text);
+            border-radius: 12px;
+            padding: 8px 10px;
+            font-family: var(--font-main);
+        }
+
+        .table-wrap {
+            overflow: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 720px;
+        }
+
+        th,
+        td {
+            border-bottom: 1px solid var(--border);
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            background: var(--panel);
+            z-index: 2;
+        }
+
+        td input {
+            width: 88px;
+        }
+
+        .codebox {
+            width: 100%;
+            min-height: 220px;
+            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, .22);
+            color: var(--text);
+            border-radius: var(--radius);
+            padding: 12px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+            white-space: pre;
+            overflow: auto;
+        }
+
+        [data-theme="light"] .codebox {
+            background: rgba(12, 18, 28, .06);
+        }
+
+        .hint {
+            color: var(--muted);
+            font-size: .92rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="topbar">
+        <div class="container topbar__inner">
+            <div class="brand">
+                <span class="brand__dot" aria-hidden="true"></span>
+                <span class="brand__text">resume.vbverse.com</span>
+            </div>
+            <div class="actions">
+                <button class="btn btn--ghost btn--icon" id="btnTheme" type="button" aria-label="Toggle theme">
+                    <span class="theme-icon" aria-hidden="true"></span>
+                </button>
+                <a class="btn btn--ghost" href="./techmap.html">Back</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container section">
+        <section class="card editor">
+            <h1 class="h2">Tech Usage Data Editor</h1>
+            <div class="editor-legend card" style="box-shadow:none;">
+                <div class="h3" style="margin-bottom:6px;">Usage scale (0–10)</div>
+                <ul class="small muted" style="margin:0; padding-left:18px;">
+                    <li><strong>0</strong> → not used</li>
+                    <li><strong>1–3</strong> → light usage</li>
+                    <li><strong>4–6</strong> → regular usage</li>
+                    <li><strong>7–8</strong> → heavy usage</li>
+                    <li><strong>9–10</strong> → primary / dominant</li>
+                </ul>
+            </div>
+
+            <div class="hint">
+                Edit your dataset here, then click <strong>Generate Script Block</strong> and copy/paste the output into
+                <code>techmap.html</code>
+                inside <code>&lt;script id="tech-usage-data" type="application/json"&gt;...&lt;/script&gt;</code>.
+            </div>
+
+            <div class="editor__row">
+                <button class="btn btn--ghost" id="btnLoadFromPaste" type="button">Load from pasted JSON</button>
+                <button class="btn btn--ghost" id="btnAddYear" type="button">Add year</button>
+                <button class="btn btn--ghost" id="btnAddTech" type="button">Add technology</button>
+                <button class="btn" id="btnGenerate" type="button">Generate Script Block</button>
+            </div>
+
+            <details class="card" style="box-shadow:none;">
+                <summary class="h3">Paste existing JSON (from techmap.html) here</summary>
+                <textarea id="jsonPaste" class="codebox"
+                    placeholder='Paste the JSON object (not the <script> tag) here...'></textarea>
+            </details>
+
+            <div class="table-wrap">
+                <table id="grid">
+                    <thead></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div>
+                <div class="editor__row">
+                    <button class="btn btn--ghost" id="btnCopy" type="button">Copy to clipboard</button>
+                    <span class="hint" id="status"></span>
+                </div>
+                <textarea id="output" class="codebox" readonly></textarea>
+            </div>
+        </section>
+    </main>
+
+    <script src="./assets/js/main.js"></script>
+
+    <script>
+        // Minimal in-memory model:
+        // { years:[...], tech:[{name:"", series:{ "2020": 50, ...}}] }
+
+        let model = {
+            years: [2022, 2023, 2024],
+            tech: [
+                { name: "Delphi", series: { "2022": 70, "2023": 70, "2024": 70 } }
+            ]
+        };
+
+        const elGrid = document.getElementById("grid");
+        const elHead = elGrid.querySelector("thead");
+        const elBody = elGrid.querySelector("tbody");
+        const elPaste = document.getElementById("jsonPaste");
+        const elOut = document.getElementById("output");
+        const elStatus = document.getElementById("status");
+
+        function normalizeModel(m) {
+            m.years = (m.years || []).map(Number).sort((a, b) => a - b);
+            m.tech = (m.tech || []).map(t => ({
+                name: String(t.name || "").trim() || "New Tech",
+                series: t.series || {}
+            }));
+
+            // Ensure series has values for all years (default 0)
+            for (const t of m.tech) {
+                for (const y of m.years) {
+                    const k = String(y);
+                    if (typeof t.series[k] !== "number") t.series[k] = Number(t.series[k] || 0);
+                }
+            }
+            return m;
+        }
+
+        function renderGrid() {
+            model = normalizeModel(model);
+
+            // Header row: Tech | year | year | ...
+            elHead.innerHTML = "";
+            const tr = document.createElement("tr");
+            const th0 = document.createElement("th");
+            th0.textContent = "Technology";
+            tr.appendChild(th0);
+
+            for (const y of model.years) {
+                const th = document.createElement("th");
+                th.textContent = y;
+                tr.appendChild(th);
+            }
+            elHead.appendChild(tr);
+
+            // Body
+            elBody.innerHTML = "";
+            model.tech.forEach((t, idx) => {
+                const row = document.createElement("tr");
+
+                // Tech name cell
+                const tdName = document.createElement("td");
+                const inpName = document.createElement("input");
+                inpName.type = "text";
+                inpName.value = t.name;
+                inpName.addEventListener("input", () => { t.name = inpName.value; });
+                tdName.appendChild(inpName);
+                row.appendChild(tdName);
+
+                // Year value cells
+                for (const y of model.years) {
+                    const td = document.createElement("td");
+                    const inp = document.createElement("input");
+                    inp.type = "number";
+                    inp.min = "0";
+                    inp.max = "10";
+                    inp.step = "1";
+                    inp.value = t.series[String(y)] ?? 0;
+                    inp.addEventListener("input", () => {
+                        t.series[String(y)] = Math.max(0, Math.min(10, Number(inp.value || 0)));
+                    });
+                    td.appendChild(inp);
+                    row.appendChild(td);
+                }
+
+                elBody.appendChild(row);
+            });
+        }
+
+        function addYear() {
+            const last = model.years.length ? model.years[model.years.length - 1] : new Date().getFullYear();
+            const next = last + 1;
+            model.years.push(next);
+            for (const t of model.tech) {
+                t.series[String(next)] = 0;
+            }
+            renderGrid();
+        }
+
+        function addTech() {
+            const name = prompt("Technology name?", "New Technology");
+            if (!name) return;
+            const t = { name: name.trim(), series: {} };
+            for (const y of model.years) {
+                t.series[String(y)] = 0;
+            }
+            model.tech.push(t);
+            renderGrid();
+        }
+
+        function loadFromPaste() {
+            try {
+                const obj = JSON.parse(elPaste.value);
+                model = normalizeModel(obj);
+                renderGrid();
+                elStatus.textContent = "Loaded.";
+            } catch (e) {
+                elStatus.textContent = "Paste JSON is not valid.";
+            }
+        }
+
+        function generateScriptBlock() {
+            model = normalizeModel(model);
+
+            // output JSON pretty
+            const json = JSON.stringify(model, null, 2);
+
+            const block =
+                '<script id="tech-usage-data" type="application/json">\n' +
+                json +
+                '\n<\/script>';
+            ;
+
+            elOut.value = block;
+            elStatus.textContent = "Generated.";
+        }
+
+        async function copyOut() {
+            try {
+                await navigator.clipboard.writeText(elOut.value);
+                elStatus.textContent = "Copied to clipboard.";
+            } catch (e) {
+                elStatus.textContent = "Copy failed. Select and copy manually.";
+            }
+        }
+
+        document.getElementById("btnAddYear").addEventListener("click", addYear);
+        document.getElementById("btnAddTech").addEventListener("click", addTech);
+        document.getElementById("btnLoadFromPaste").addEventListener("click", loadFromPaste);
+        document.getElementById("btnGenerate").addEventListener("click", generateScriptBlock);
+        document.getElementById("btnCopy").addEventListener("click", copyOut);
+
+        renderGrid();
+        generateScriptBlock();
+    </script>
+</body>
+
+</html>

@@ -673,3 +673,301 @@ button.btn {
     page-break-before: always;
   }
 }
+
+.techmap__head {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.techmap__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 240px;
+}
+
+.tech-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+/* chip base */
+.tech-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: var(--panel);
+  color: var(--text);
+  transition: transform .15s ease, background .15s ease;
+}
+
+/* percentage badge */
+.tech-chip__pct {
+  font-size: .8em;
+  opacity: .75;
+}
+
+/* “heat” via CSS variables set by JS:
+   --p = 0..100, --s = scale */
+.tech-chip {
+  transform: scale(var(--s, 1));
+  background: linear-gradient(180deg,
+      rgba(96, 165, 250, calc(var(--p, 0) / 180)),
+      rgba(96, 165, 250, calc(var(--p, 0) / 280)));
+}
+
+/* ===== Tech Map v2 ===== */
+
+.techmap2__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.techmap2__controls {
+  min-width: 320px;
+  max-width: 520px;
+  width: 48%;
+}
+
+.year-track {
+  margin-top: 8px;
+  position: relative;
+  padding: 10px 8px 18px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--panel);
+}
+
+.year-slider {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(233, 238, 246, .18);
+  outline: none;
+}
+
+[data-theme="light"] .year-slider {
+  background: rgba(12, 18, 28, .18);
+}
+
+.year-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .92);
+  /* whitish knob */
+  border: 1px solid rgba(0, 0, 0, .15);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .25);
+  cursor: pointer;
+}
+
+[data-theme="light"] .year-slider::-webkit-slider-thumb {
+  border: 1px solid rgba(12, 18, 28, .18);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .12);
+}
+
+.year-ticks {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.tech-planes {
+  display: grid;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.tech-plane {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  padding: 12px;
+  overflow: visible; /* allow bubbles/glow to extend without clipping */
+}
+
+.tech-plane__title {
+  margin-bottom: 10px;
+}
+
+.tech-cloud {
+  position: relative;
+  display: block;           /* ensure it behaves like a 2D plane (not flex) */
+  min-height: 260px;
+  padding: 22px;            /* safe inner boundary so chips/glow don't hit the rounded edge */
+  border-radius: 14px;
+  overflow: visible;        /* never clip bubbles */
+}
+
+.tech-cloud--dim {
+  opacity: 0.92;
+}
+
+/* chips absolutely positioned (packed by JS) */
+.tech-chip2 {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  transform: translate3d(var(--x), var(--y), 0) scale(var(--s, 1));
+  transition: transform .18s ease, opacity .18s ease, background .18s ease, filter .18s ease;
+  will-change: transform;
+}
+
+.tech-chip2__pct {
+  font-size: .82em;
+  color: var(--muted);
+}
+
+.tech-chip2.is-active {
+  /* heat tint: blue glow based on --p (0..100) */
+  background: linear-gradient(180deg,
+      rgba(96, 165, 250, calc(var(--p, 0)/160)),
+      rgba(96, 165, 250, calc(var(--p, 0)/260)));
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, .18));
+}
+
+.tech-chip2.is-inactive {
+  opacity: .55;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .techmap2__controls {
+    width: 100%;
+    min-width: 260px;
+  }
+
+  .tech-cloud {
+    min-height: 320px;
+  }
+}
+
+.tech-chip2.is-active {
+  /* strong heat with solid-ish fill + glow */
+  background: linear-gradient(180deg,
+      rgba(96, 165, 250, calc(0.25 + var(--p, 0)/140)),
+      rgba(96, 165, 250, calc(0.12 + var(--p, 0)/220)));
+  border-color: rgba(96, 165, 250, calc(0.25 + var(--p, 0)/160));
+  box-shadow:
+    0 12px 26px rgba(0, 0, 0, .18),
+    0 0 0 1px rgba(96, 165, 250, calc(0.10 + var(--p, 0)/240)),
+    0 18px 40px rgba(96, 165, 250, calc(var(--p, 0)/280));
+}
+
+/* ===== Tech map bottom timeline slider ===== */
+
+.techmap2__footer {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.year-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.year-label {
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+/* full-width timeline track */
+.year-track--full {
+  width: 100%;
+  padding: 12px 14px 20px;
+  border-radius: 18px;
+}
+
+/* ticks span entire width */
+.year-track--full .year-ticks {
+  left: 14px;
+  right: 14px;
+}
+
+.year-track--full {
+  background:
+    linear-gradient(to right,
+      rgba(96, 165, 250, .08),
+      rgba(96, 165, 250, .18),
+      rgba(96, 165, 250, .08));
+}
+
+/* Ensure tech map uses same font system as resume */
+.techmap2,
+.techmap2 * {
+  font-family: var(--font-main);
+}
+
+/* ===== Center Tech Map vertically ===== */
+
+.page-techmap main {
+  min-height: calc(100vh - 72px);
+  /* subtract topbar height */
+  display: flex;
+  align-items: center;
+  /* vertical center */
+}
+
+.page-techmap .techmap2 {
+  width: 100%;
+}
+
+.editor-legend {
+  background: var(--panel);
+  border: 1px dashed var(--border);
+}
+
+.tech-plane--all .tech-cloud {
+  min-height: 320px;
+  /* 🔑 more room for inactive tech */
+}
+
+/* Keep Technology column fixed while scrolling horizontally */
+#grid th:first-child,
+#grid td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  background: var(--panel);
+  white-space: nowrap;
+}
+
+/* Slight visual separation from year columns */
+#grid th:first-child {
+  border-right: 1px solid var(--border);
+}
+
+#grid td:first-child {
+  border-right: 1px solid var(--border);
+}
+
