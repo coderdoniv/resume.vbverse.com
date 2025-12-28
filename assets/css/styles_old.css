@@ -24,6 +24,34 @@
   --icon: rgba(255, 255, 255, 0.92);
 }
 
+/* ================================
+   Tech Map: responsive chip sizing
+   ================================ */
+:root {
+  --chip-all-scale: 1;
+}
+
+/* Tablets */
+@media (max-width: 900px) {
+  :root {
+    --chip-all-scale: 0.9;
+  }
+}
+
+/* Mobiles */
+@media (max-width: 600px) {
+  :root {
+    --chip-all-scale: 0.8;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 420px) {
+  :root {
+    --chip-all-scale: 0.72;
+  }
+}
+
 [data-theme="light"] {
   --bg: #ffffff;
   --panel: rgba(12, 18, 28, 0.04);
@@ -794,44 +822,6 @@ button.btn {
   white-space: nowrap;
 }
 
-.year-ticks {
-  pointer-events: none;
-}
-
-.year-ticks .tick {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-}
-
-/* Visible labels */
-.year-ticks .tick--label {
-  font-size: 0.75rem;
-}
-
-/* Dots for skipped years */
-.year-ticks .tick--dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: currentColor;
-  opacity: 0.55;
-}
-
-@media (max-width: 420px) {
-  .year-ticks .tick--dot {
-    width: 4px;
-    height: 4px;
-  }
-
-  .year-ticks .tick--label {
-    font-size: 0.7rem;
-  }
-}
-
-
-
 .tech-planes {
   display: grid;
   gap: 14px;
@@ -856,6 +846,7 @@ button.btn {
   display: block;
   /* ensure it behaves like a 2D plane (not flex) */
   min-height: 260px;
+  padding: 22px;
   /* safe inner boundary so chips/glow don't hit the rounded edge */
   border-radius: 14px;
   overflow: visible;
@@ -933,11 +924,16 @@ button.btn {
 }
 
 /* ================================
-   All Technologies: larger, readable chips
-   - size is controlled by JS via --s (responsive by panel width)
-   - NOT tied to usage points
+   All Technologies: fixed-size chips
+   ================================ */
+/* ================================
+   All Technologies: fixed + responsive
    ================================ */
 .tech-plane--all .tech-chip2 {
+  /* ignore JS scaling, but allow responsive scaling */
+  transform:
+    translate3d(var(--x), var(--y), 0) scale(var(--chip-all-scale)) !important;
+
   padding: 10px 16px;
   font-size: 1.05rem;
   font-weight: 600;

@@ -2,73 +2,73 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Tech Map • resume.vbverse.com</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tech Map • resume.vbverse.com</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700|Inter:400,500,600,700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="./assets/css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700|Inter:400,500,600,700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="./assets/css/styles.css" />
 </head>
 
 <body class="page-techmap">
-    <header class="topbar">
-        <div class="container topbar__inner">
-            <div class="brand">
-                <span class="brand__dot" aria-hidden="true"></span>
-                <span class="brand__text">resume.vbverse.com</span>
-            </div>
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <span class="brand__dot" aria-hidden="true"></span>
+        <span class="brand__text">resume.vbverse.com</span>
+      </div>
 
-            <div class="actions">
-                <button class="btn btn--ghost btn--icon" id="btnTheme" type="button" aria-label="Toggle theme">
-                    <span class="theme-icon" aria-hidden="true"></span>
-                </button>
-                <a class="btn btn--ghost" href="./timeline.html">Back</a>
-            </div>
+      <div class="actions">
+        <button class="btn btn--ghost btn--icon" id="btnTheme" type="button" aria-label="Toggle theme">
+          <span class="theme-icon" aria-hidden="true"></span>
+        </button>
+        <a class="btn btn--ghost" href="./timeline.html">Back</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container section">
+    <section class="card techmap2">
+      <div class="techmap2__head">
+        <div>
+          <h1 class="h2" style="margin-bottom:6px;">Technology Map</h1>
+          <div class="muted small">Scrub through years to see what was in active use.</div>
         </div>
-    </header>
+      </div>
 
-    <main class="container section">
-        <section class="card techmap2">
-            <div class="techmap2__head">
-                <div>
-                    <h1 class="h2" style="margin-bottom:6px;">Technology Map</h1>
-                    <div class="muted small">Scrub through years to see what was in active use.</div>
-                </div>
-            </div>
+      <!-- Two planes -->
+      <div class="tech-planes">
+        <div class="tech-plane tech-plane--active">
+          <div class="tech-plane__title small muted">Active in <span id="yearLabel2"></span></div>
+          <div id="activePlane" class="tech-cloud"></div>
+        </div>
 
-            <!-- Two planes -->
-            <div class="tech-planes">
-                <div class="tech-plane tech-plane--active">
-                    <div class="tech-plane__title small muted">Active in <span id="yearLabel2"></span></div>
-                    <div id="activePlane" class="tech-cloud"></div>
-                </div>
+        <div class="tech-plane tech-plane--all">
+          <div class="tech-plane__title small muted">All technologies</div>
+          <div id="allPlane" class="tech-cloud tech-cloud--dim"></div>
+        </div>
+      </div>
+      <div class="techmap2__footer">
+        <div class="year-footer">
+          <div class="year-label">
+            Year: <strong><span id="yearLabel"></span></strong>
+          </div>
 
-                <div class="tech-plane tech-plane--all">
-                    <div class="tech-plane__title small muted">All technologies</div>
-                    <div id="allPlane" class="tech-cloud tech-cloud--dim"></div>
-                </div>
-            </div>
-            <div class="techmap2__footer">
-                <div class="year-footer">
-                    <div class="year-label">
-                        Year: <strong><span id="yearLabel"></span></strong>
-                    </div>
+          <div class="year-track year-track--full">
+            <input id="yearSlider" class="year-slider" type="range" />
+            <div id="yearTicks" class="year-ticks" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
 
-                    <div class="year-track year-track--full">
-                        <input id="yearSlider" class="year-slider" type="range" />
-                        <div id="yearTicks" class="year-ticks" aria-hidden="true"></div>
-                    </div>
-                </div>
-            </div>
+    </section>
+  </main>
 
-        </section>
-    </main>
-
-    <!-- Embedded data (works on file:// and GitHub Pages) -->
-    <script id="tech-usage-data" type="application/json">
+  <!-- Embedded data (works on file:// and GitHub Pages) -->
+  <script id="tech-usage-data" type="application/json">
 {
   "years": [
     2001,
@@ -642,8 +642,10 @@
 }
 </script>
 
-    <script src="./assets/js/main.js"></script>
-    <script src="./assets/js/techmap.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <script src="./assets/js/main.js"></script>
+  <script src="./assets/js/techmap.js"></script>
+
 </body>
 
 </html>

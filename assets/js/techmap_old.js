@@ -21,53 +21,7 @@
     slider.value = slider.max;
 
     // Render year ticks
-    // Render year ticks (responsive: labels + dots)
-    function renderYearTicks() {
-        const track = slider.closest(".year-track") || ticks.parentElement;
-        const w = track ? track.getBoundingClientRect().width : window.innerWidth;
-
-        // If we have plenty of space, show all years as labels (your current behaviour)
-        if (w >= 900) {
-            ticks.innerHTML = years.map(y => `<span class="tick tick--label">${y}</span>`).join("");
-            return;
-        }
-
-        // Decide how many labels we can reasonably show based on width.
-        // Tune the divisor to change density.
-        const targetLabels = Math.max(4, Math.min(10, Math.floor(w / 110))); // e.g. 320px -> ~4 labels
-        const step = Math.max(1, Math.ceil((years.length - 1) / (targetLabels - 1)));
-
-        ticks.innerHTML = years.map((y, i) => {
-            const isFirst = i === 0;
-            const isLast = i === years.length - 1;
-            const isLabel = isFirst || isLast || (i % step === 0);
-
-            if (isLabel) {
-                return `<span class="tick tick--label">${y}</span>`;
-            }
-            return `<span class="tick tick--dot" aria-hidden="true"></span>`;
-        }).join("");
-    }
-
-    // initial render
-    renderYearTicks();
-
-    // rerender on resize (panel width changes / orientation changes)
-    let _tickRAF = 0;
-    function scheduleRenderYearTicks() {
-        cancelAnimationFrame(_tickRAF);
-        _tickRAF = requestAnimationFrame(renderYearTicks);
-    }
-
-    window.addEventListener("resize", scheduleRenderYearTicks);
-
-    // even better: watch the track itself
-    const trackEl = slider.closest(".year-track");
-    if (trackEl && "ResizeObserver" in window) {
-        const ro = new ResizeObserver(scheduleRenderYearTicks);
-        ro.observe(trackEl);
-    }
-
+    ticks.innerHTML = years.map(y => `<span>${y}</span>`).join("");
 
     // Helpers
     function usageFor(tech, year) {
@@ -79,28 +33,6 @@
         // p = 0..10
         // maps to ~0.75 .. 2.1 (very visible)
         return 0.75 + (p / 10) * 1.35;
-    }
-
-
-    // Responsive scale for ALL technologies panel (not based on usage points)
-    function allPlaneScaleFor(container) {
-        const w = container.getBoundingClientRect().width;
-        // Tune these if needed
-        if (w <= 420) return 0.72;
-        if (w <= 600) return 0.80;
-        if (w <= 900) return 0.90;
-        return 1.00;
-    }
-
-
-    // Responsive scale for ACTIVE technologies panel (keeps chips within panel on small screens)
-    function activePlaneScaleFor(container) {
-        const w = container.getBoundingClientRect().width;
-        // Active chips already vary by points; this is a gentle overall multiplier.
-        if (w <= 420) return 0.82;
-        if (w <= 600) return 0.88;
-        if (w <= 900) return 0.94;
-        return 1.00;
     }
 
 
@@ -246,7 +178,8 @@
             animate = false,
             deterministic = true,
             stepsMax = 1200,
-            GAP = 6 // small visual breathing room only (chip-to-chip)
+            SAFE = 34,
+            GAP = 12
         } = opts;
 
         if (!elements.length) return;
@@ -265,9 +198,8 @@
         const padT = parseFloat(style.paddingTop) || 0;
         const padB = parseFloat(style.paddingBottom) || 0;
 
-        // Use REAL available size (no artificial minimums)
-        const W = Math.max(0, rect.width - padL - padR);
-        const H = Math.max(0, rect.height - padT - padB);
+        const W = Math.max(260, rect.width - padL - padR - SAFE * 2);
+        const H = Math.max(180, rect.height - padT - padB - SAFE * 2);
 
         // --- RNG (stable when deterministic) ---
         let seed = (deterministic ? (seedKey || 1) : (Date.now() & 0xffffffff)) >>> 0;
@@ -276,77 +208,49 @@
             return seed / 4294967296;
         }
 
+        // Build nodes using intended rendered size (offset * scale)
         const nodes = elements.map(el => {
             const s = parseFloat(getComputedStyle(el).getPropertyValue("--s")) || 1;
             const w = el.offsetWidth * s;
             const h = el.offsetHeight * s;
 
-            // Collision radius (diagonal) + GAP for visual breathing room
+            // IMPORTANT: pill-safe collision radius = half-diagonal, not half-max
+            // This is what eliminates your remaining overlaps.
             const r = (Math.hypot(w, h) * 0.5) + GAP;
 
-            // Start anywhere inside the panel; bounds force will fix it
-            const x = rand() * W;
-            const y = rand() * H;
+            // Start within bounds; center coords are in [r, W-r], [r, H-r]
+            const x = r + rand() * (W - 2 * r);
+            const y = r + rand() * (H - 2 * r);
 
             return { el, w, h, r, x, y };
         });
 
-        // Bounds force MUST clamp by half-width/half-height, not by collision radius.
-        // Otherwise you create an "invisible margin" = r near edges.
+        // Keep nodes inside the plane (center coords).
+        // Use radius clamp so even big pills never clip.
         function forceBounds(width, height) {
             let nodesRef;
             function force() {
                 for (const n of nodesRef) {
-                    const hw = n.w * 0.5;
-                    const hh = n.h * 0.5;
-
-                    n.x = Math.max(hw, Math.min(width - hw, n.x));
-                    n.y = Math.max(hh, Math.min(height - hh, n.y));
+                    n.x = Math.max(n.r, Math.min(width - n.r, n.x));
+                    n.y = Math.max(n.r, Math.min(height - n.r, n.y));
                 }
             }
             force.initialize = _ => { nodesRef = _; };
             return force;
         }
 
-        // Center the whole cluster within the panel after simulation
-        function computeClusterShiftCentered() {
-            let minL = Infinity, minT = Infinity, maxR = -Infinity, maxB = -Infinity;
-
+        // Position writer (center -> top-left)
+        const applyPositions = () => {
             for (const n of nodes) {
-                const l = n.x - n.w * 0.5;
-                const t = n.y - n.h * 0.5;
-                minL = Math.min(minL, l);
-                minT = Math.min(minT, t);
-                maxR = Math.max(maxR, l + n.w);
-                maxB = Math.max(maxB, t + n.h);
+                const left = (n.x - n.w * 0.5);
+                const top = (n.y - n.h * 0.5);
+                n.el.style.setProperty("--x", `${padL + SAFE + left}px`);
+                n.el.style.setProperty("--y", `${padT + SAFE + top}px`);
             }
+        };
 
-            const clusterW = maxR - minL;
-            const clusterH = maxB - minT;
-
-            // If the cluster is bigger than the panel, don't try to "center" it.
-            const dx = (clusterW <= W) ? ((W - clusterW) / 2 - minL) : -minL;
-            const dy = (clusterH <= H) ? ((H - clusterH) / 2 - minT) : -minT;
-
-            return { dx, dy };
-        }
-
-        function applyPositions() {
-            const { dx, dy } = computeClusterShiftCentered();
-
-            for (const n of nodes) {
-                let left = (n.x - n.w * 0.5) + dx;
-                let top = (n.y - n.h * 0.5) + dy;
-
-                // Final clamp so entire pill stays inside panel
-                left = Math.max(0, Math.min(W - n.w, left));
-                top = Math.max(0, Math.min(H - n.h, top));
-
-                n.el.style.setProperty("--x", `${padL + left}px`);
-                n.el.style.setProperty("--y", `${padT + top}px`);
-            }
-        }
-
+        // Slightly stronger collision + a bit more repulsion.
+        // These defaults are tuned for your chip counts.
         const sim = d3ref.forceSimulation(nodes)
             .velocityDecay(0.28)
             .alpha(1)
@@ -364,11 +268,19 @@
             .force("bounds", forceBounds(W, H));
 
         if (animate) {
+            // You will SEE it move.
             sim.on("tick", applyPositions);
-            sim.on("end", () => { applyPositions(); sim.stop(); });
-            return;
+
+            // Stop once settled (also ensures final clamp applied)
+            sim.on("end", () => {
+                applyPositions();
+                sim.stop();
+            });
+
+            return; // let it run async
         }
 
+        // Non-animated: run until it cools (deterministic final layout)
         let steps = 0;
         while (sim.alpha() > sim.alphaMin() && steps < stepsMax) {
             sim.tick();
@@ -377,7 +289,6 @@
         sim.stop();
         applyPositions();
     }
-
 
 
     function update(year) {
@@ -393,8 +304,7 @@
             const el = chips.get(t.name);
             if (!el) continue;
 
-            el.style.setProperty("--p", Math.min(100, points * 10));
-
+            el.style.setProperty("--p", points);
 
             if (points > 0) {
                 el.classList.add("is-active");
@@ -416,24 +326,18 @@
                         1.00;
 
         // Second pass: set scale with density and caps
-        const allScale = allPlaneScaleFor(allPlane);
-        const activeScale = activePlaneScaleFor(activePlane);
-
         for (const t of techList) {
             const points = usageFor(t, year);
             const el = chips.get(t.name);
             if (!el) continue;
 
-            const base = scaleFromPoints(points);              // 0..10 -> scale
-            const scaled = Math.min(base * density, 1.55);     // cap for big bubbles
+            const base = scaleFromPoints(points);        // your 0..10 -> scale fn
+            const scaled = Math.min(base * density, 1.55); // hard cap for big bubbles
 
-            if (points > 0) {
-                // Active plane: usage-driven sizing
-                el.style.setProperty("--s", (scaled * activeScale).toFixed(3));
-            } else {
-                // All Technologies plane: responsive-only sizing (not usage-driven)
-                el.style.setProperty("--s", allScale.toFixed(3));
-            }
+            // Inactive bubbles should never be large (keeps bottom plane tidy)
+            const finalScale = points > 0 ? scaled : Math.min(scaled, 0.92);
+
+            el.style.setProperty("--s", finalScale.toFixed(3));
         }
 
         // Move elements to correct plane
