@@ -6,17 +6,22 @@
 
 :root {
   --bg: #0b0f14;
-  --panel: rgba(255, 255, 255, 0.04);
-  --border: rgba(255, 255, 255, 0.08);
-  --text: rgba(255, 255, 255, 0.92);
-  --muted: rgba(255, 255, 255, 0.62);
+  --panel: #111823;
+  --panel2: #0f1620;
+  --text: rgba(233, 238, 246, .92);
+  --muted: rgba(233, 238, 246, .70);
   --link: rgba(130, 190, 255, 0.95);
   --chip: rgba(255, 255, 255, 0.06);
-  --shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+  --border: rgba(233, 238, 246, .14);
+  --shadow: 0 12px 30px rgba(0, 0, 0, .35);
   --radius: 14px;
   --max: 1080px;
   --font-main: 'Quicksand', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   --font-light: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --btn-bg: rgba(255, 255, 255, 0.08);
+  --btn-fg: var(--text);
+  --btn-hover-bg: rgba(255, 255, 255, 0.12);
+  --icon: rgba(255, 255, 255, 0.92);
 }
 
 [data-theme="light"] {
@@ -29,6 +34,10 @@
   --chip: rgba(12, 18, 28, 0.06);
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.10);
   --font-main: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --btn-bg: rgba(12, 18, 28, 0.06);
+  --btn-fg: var(--text);
+  --btn-hover-bg: rgba(12, 18, 28, 0.10);
+  --icon: rgba(12, 18, 28, 0.92);
 }
 
 * {
@@ -43,10 +52,22 @@ body {
 body {
   margin: 0;
   font-family: var(--font-main);
-  background: var(--bg);
   color: var(--text);
   line-height: 1.55;
+
+  background:
+    radial-gradient(1200px 800px at 70% -10%, rgba(120, 170, 255, .18), transparent 60%),
+    radial-gradient(900px 700px at 10% 10%, rgba(140, 255, 210, .10), transparent 55%),
+    var(--bg);
+
+  background-attachment: fixed;
 }
+
+[data-theme="light"] body {
+  background: var(--bg);
+  background-attachment: initial;
+}
+
 
 a {
   color: var(--link);
@@ -92,9 +113,9 @@ a:hover {
 .topbar {
   position: sticky;
   top: 0;
-  background: rgba(11, 15, 20, 0.72);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--border);
+  background: rgba(11, 15, 20, .65);
+  border-bottom: 1px solid rgba(233, 238, 246, .08);
   z-index: 50;
 }
 
@@ -156,7 +177,7 @@ a:hover {
 }
 
 .btn:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--btn-hover-bg);
 }
 
 .btn--ghost {
@@ -384,7 +405,8 @@ a:hover {
 
   .topbar,
   .actions,
-  .nav {
+  .nav,
+  .btn {
     display: none !important;
   }
 
@@ -403,6 +425,7 @@ a:hover {
   .meta {
     box-shadow: none !important;
     background: transparent !important;
+    /* legacy */
   }
 
   .container {
@@ -421,46 +444,9 @@ a:hover {
   padding: 0 18px;
 }
 
-.page-header {
-  padding: 28px 0 12px;
-}
-
-.top-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
 .brand {
   text-decoration: none;
   font-weight: 600;
-}
-
-.view-toggle {
-  display: inline-flex;
-  gap: 8px;
-}
-
-.toggle-link {
-  text-decoration: none;
-  padding: 8px 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-}
-
-.toggle-link.is-active {
-  border-color: rgba(255, 255, 255, 0.35);
-}
-
-.page-title {
-  margin: 0;
-}
-
-.page-subtitle {
-  margin: 8px 0 0;
-  opacity: 0.8;
 }
 
 .timeline {
@@ -561,7 +547,7 @@ a:hover {
 
 /* Optional: make buttons slightly tighter so they always fit */
 .actions .btn {
-  padding: .45rem .8rem;
+  padding: .4rem .4rem;
   font-size: .9rem;
 }
 
@@ -605,4 +591,85 @@ button.btn {
 .btn:active {
   text-decoration: none;
   /* 🔑 kill underline everywhere */
+}
+
+.btn--icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 999px;
+}
+
+
+/* Topbar action buttons: transparent by default, but keep hover feedback */
+.topbar .actions .btn {
+  background: transparent;
+}
+
+.topbar .actions .btn:hover,
+.topbar .actions .btn:focus-visible {
+  background: var(--btn-hover-bg);
+}
+
+/* Light theme → show MOON (click to go dark) */
+[data-theme='light'] .theme-icon {
+  background-image: url("data:image/svg+xml;utf8,<svg ... moon ...>");
+}
+
+
+/* =========================================================
+   Theme toggle icon (ACTION-based, industry standard)
+   - Dark mode  → show SUN (click to go light)
+   - Light mode → show MOON (click to go dark)
+   ========================================================= */
+
+.theme-icon {
+  width: 26px;
+  height: 26px;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+
+  /* Dark mode → show SUN */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='5'/><line x1='12' y1='1' x2='12' y2='3'/><line x1='12' y1='21' x2='12' y2='23'/><line x1='4.22' y1='4.22' x2='5.64' y2='5.64'/><line x1='18.36' y1='18.36' x2='19.78' y2='19.78'/><line x1='1' y1='12' x2='3' y2='12'/><line x1='21' y1='12' x2='23' y2='12'/><line x1='4.22' y1='19.78' x2='5.64' y2='18.36'/><line x1='18.36' y1='5.64' x2='19.78' y2='4.22'/></svg>");
+}
+
+/* Light mode → show MOON */
+[data-theme='light'] .theme-icon {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230C121C' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round'><path d='M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z'/></svg>");
+}
+
+
+/* =========================================================
+   Consistent card styling (matches vbverse look)
+   Ensure Experience items (.titem) and section cards (.card)
+   have the same surface, border, and shadow in both themes.
+   ========================================================= */
+
+.card,
+.titem,
+.tl-origin {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(233, 238, 246, 0.06), rgba(233, 238, 246, 0.03));
+  box-shadow: var(--shadow);
+}
+
+[data-theme="light"] .card,
+[data-theme="light"] .titem,
+[data-theme="light"] .tl-origin {
+  background: linear-gradient(180deg, rgba(12, 18, 28, 0.04), rgba(12, 18, 28, 0.02));
+}
+
+/* Optional: keep timeline-origin dashed border, but with consistent weight */
+.tl-origin {
+  border-style: dashed;
+}
+
+@media print {
+  .page-break {
+    break-before: page;
+    page-break-before: always;
+  }
 }

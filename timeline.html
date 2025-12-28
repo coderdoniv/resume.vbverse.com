@@ -10,25 +10,23 @@
 </head>
 
 <body>
-    <header class="page-header">
-        <div class="container">
-            <div class="top-nav">
-                <a class="brand" href="./index.html">resume.vbverse.com</a>
-
-                <nav class="view-toggle" aria-label="View toggle">
-                    <a class="toggle-link" href="./index.html">Resume</a>
-                    <a class="toggle-link is-active" href="./timeline.html" aria-current="page">Timeline</a>
-                </nav>
+    <header class="topbar">
+        <div class="container topbar__inner">
+            <div class="brand">
+                <span class="brand__dot" aria-hidden="true"></span>
+                <span class="brand__text">resume.vbverse.com</span>
             </div>
 
-            <h1 class="page-title">Career Timeline</h1>
-            <p class="page-subtitle">
-                Work experience listed in reverse chronological order.
-                Personal projects are documented separately at
-                <a href="https://vbverse.com" target="_blank" rel="noopener">vbverse.com</a>.
-            </p>
+            <div class="actions">
+                <button class="btn btn--ghost btn--icon" id="btnTheme" type="button" aria-label="Toggle theme">
+                    <span class="theme-icon" aria-hidden="true"></span>
+                </button>
+                <a class="btn btn--ghost" href="./index.html">Resume</a>
+                <button class="btn" id="btnPrint" type="button">Print / Save PDF</button>
+            </div>
         </div>
     </header>
+
 
     <main class="container timeline">
         <section class="timeline-track" aria-label="Career timeline">
