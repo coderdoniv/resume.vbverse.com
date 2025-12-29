@@ -1,3 +1,21 @@
+/* Print: Force light theme variables only for print preview/print */
+@media print {
+  :root {
+    --bg: #ffffff !important;
+    --panel: rgba(12, 18, 28, 0.04) !important;
+    --border: rgba(12, 18, 28, 0.10) !important;
+    --text: rgba(12, 18, 28, 0.92) !important;
+    --muted: rgba(12, 18, 28, 0.62) !important;
+    --link: rgba(0, 102, 204, 0.95) !important;
+    --chip: rgba(12, 18, 28, 0.06) !important;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.10) !important;
+    --font-main: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+    --btn-bg: rgba(12, 18, 28, 0.06) !important;
+    --btn-fg: var(--text) !important;
+    --btn-hover-bg: rgba(12, 18, 28, 0.10) !important;
+    --icon: rgba(12, 18, 28, 0.92) !important;
+  }
+}
 /* resume.vbverse.com
    Minimal, clean, printable resume site.
    - Dark mode by default, with a light toggle.
@@ -323,7 +341,7 @@ a:hover {
   margin: 6px 0;
 }
 
-.timeline {
+.experience {
   display: grid;
   gap: 14px;
 }
