@@ -1064,3 +1064,17 @@ button.btn {
   text-overflow: ellipsis;
   overflow: hidden;
 }
+
+.tech-group {
+  margin-bottom: 0.9rem;
+}
+
+.tech-group strong {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.tech-items {
+  line-height: 1.5;
+}

@@ -21,6 +21,41 @@
     rel="stylesheet">
 
   <link rel="stylesheet" href="assets/css/styles.css" />
+  <style>
+    .tech-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 768px) {
+      .tech-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+
+    .tech-heading {
+      font-weight: 500;
+      margin-bottom: 0.35rem;
+    }
+
+    .tech-list {
+      margin: 0 0 0.75rem 1.1rem;
+      padding: 0;
+    }
+
+    .tech-list li {
+      margin-bottom: 0.2rem;
+      line-height: 1.4;
+    }
+  </style>
 </head>
 
 <body>
@@ -304,7 +339,7 @@
       <div class="container">
         <h2 class="h2">Skills</h2>
 
-        <div class="grid2">
+        <div class="stack">
           <div class="card">
             <h3 class="h3">Core</h3>
             <ul class="cols">
@@ -319,17 +354,64 @@
 
           <div class="card">
             <h3 class="h3">Technologies</h3>
-            <ul class="cols">
-              <li>Delphi (VCL/FMX)</li>
-              <li>Flutter</li>
-              <li>C# / ASP.NET</li>
-              <li>HTML, CSS, JavaScript</li>
-              <li>SOAP / REST</li>
-              <li>Firebird / SQL Server</li>
-              <li>Git, SVN, TFS, Jenkins</li>
-            </ul>
-            <p class="small muted" style="margin-top:.75rem">
-              Learning / exploring: Python, React, Cloud platforms (AWS, Azure)
+
+            <div class="tech-grid">
+              <div>
+                <div class="tech-group">
+                  <div class="tech-heading">Core Engineering Platforms</div>
+                  <ul class="tech-list">
+                    <li>Delphi (VCL/FMX), C#, Flutter (iOS &amp; Android), HTML, CSS, JavaScript</li>
+                  </ul>
+                </div>
+
+                <div class="tech-group">
+                  <div class="tech-heading">System Design &amp; Integration</div>
+                  <ul class="tech-list">
+                    <li>REST APIs, SOAP</li>
+                    <li>Third-party integrations</li>
+                    <li>Event-driven workflows</li>
+                  </ul>
+                </div>
+
+                <div class="tech-group">
+                  <div class="tech-heading">Data &amp; Persistence</div>
+                  <ul class="tech-list">
+                    <li>Firebird</li>
+                    <li>SQL Server</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div>
+                <div class="tech-group">
+                  <div class="tech-heading">DevOps &amp; Delivery</div>
+                  <ul class="tech-list">
+                    <li>Git, GitHub, Jenkins, CI/CD pipelines</li>
+                  </ul>
+                </div>
+
+                <div class="tech-group">
+                  <div class="tech-heading">AI &amp; Intelligent Systems (Applied / POC)</div>
+                  <ul class="tech-list">
+                    <li>Speech-to-text (Whisper), speaker diarization (Pyannote)</li>
+                    <li>LLM-based structuring (LLaMA, OpenAI, Claude), Python services (Flask APIs)</li>
+                    <li>AI-assisted developer tooling, human-in-the-loop workflows</li>
+                  </ul>
+                </div>
+
+                <div class="tech-group">
+                  <div class="tech-heading">Cloud &amp; Infrastructure</div>
+                  <ul class="tech-list">
+                    <li>AWS (EC2, IAM, basic networking, deployment pipelines)</li>
+                    <li>Azure (introductory exposure)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <p class="small muted" style="margin-top:1rem">
+              Focused on applying technologies pragmatically to real-world product workflows,
+              from proof-of-concept through production-ready system design.
             </p>
           </div>
         </div>
