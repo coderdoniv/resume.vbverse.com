@@ -129,23 +129,21 @@
             </div>
 
             <div class="hint">
-                Edit your dataset here, then click <strong>Generate Script Block</strong> and copy/paste the output into
-                <code>techmap.html</code>
-                inside <code>&lt;script id="tech-usage-data" type="application/json"&gt;...&lt;/script&gt;</code>.
+                Edit your dataset here, then click <strong>Generate JSON</strong> and copy/paste the output into <code>assets/data/tech-usage.json</code> (the JSON file used by <code>techmap.html</code>).
             </div>
 
             <div class="editor__row">
                 <button class="btn btn--ghost" id="btnLoadFromPaste" type="button">Load from pasted JSON</button>
                 <button class="btn btn--ghost" id="btnAddYear" type="button">Add year</button>
                 <button class="btn btn--ghost" id="btnAddTech" type="button">Add technology</button>
-                <button class="btn" id="btnGenerate" type="button">Generate Script Block</button>
+                <button class="btn" id="btnGenerate" type="button">Generate JSON</button>
                 <span class="hint" id="dataSource" style="margin-left:auto;"></span>
             </div>
 
             <details class="card" style="box-shadow:none;">
-                <summary class="h3">Paste existing JSON (from techmap.html) here</summary>
+                <summary class="h3">Paste existing JSON (from tech-usage.json) here</summary>
                 <textarea id="jsonPaste" class="codebox"
-                    placeholder='Paste the JSON object (not the <script> tag) here...'></textarea>
+                    placeholder='Paste the JSON here...'></textarea>
             </details>
 
             <div class="table-wrap">
@@ -334,19 +332,13 @@
             }
         }
 
-        function generateScriptBlock() {
+        function generateJson() {
             model = normalizeModel(model);
 
-            // output JSON pretty
+            // output JSON pretty (no <script> wrapper)
             const json = JSON.stringify(model, null, 2);
 
-            const block =
-                '<script id="tech-usage-data" type="application/json">\n' +
-                json +
-                '\n<\/script>';
-            ;
-
-            elOut.value = block;
+            elOut.value = json;
             elStatus.textContent = "Generated.";
         }
 
@@ -362,13 +354,13 @@
         document.getElementById("btnAddYear").addEventListener("click", addYear);
         document.getElementById("btnAddTech").addEventListener("click", addTech);
         document.getElementById("btnLoadFromPaste").addEventListener("click", loadFromPaste);
-        document.getElementById("btnGenerate").addEventListener("click", generateScriptBlock);
+        document.getElementById("btnGenerate").addEventListener("click", generateJson);
         document.getElementById("btnCopy").addEventListener("click", copyOut);
 
         async function init() {
             await loadInitialModel();
             renderGrid();
-            generateScriptBlock();
+            generateJson();
         }
 
         init();
