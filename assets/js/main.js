@@ -32,7 +32,8 @@
   const btnPrint = document.getElementById("btnPrint");
   if (btnPrint) {
     btnPrint.addEventListener("click", () => {
-      window.print();
+      // Open the PDF resume in a new tab for printing
+      window.open("assets/data/Resume.pdf", "_blank");
     });
   }
 
